@@ -240,6 +240,49 @@ impl TransactionFetcher {
         surplus_hashes
     }
 
+    pub(super) fn pack_hashes_eth68_optimised<I>(&mut self, hashes: I) -> Vec<TxHash>
+    where
+        I: Iterator<Item = TxHash>,
+    {
+        let mut acc_size_response = 0;
+        let mut remaining_space = 0;
+        let mut picked_hashes: Vec<TxHash> = Vec::new();
+        let mut remaining_hashes: Vec<(TxHash, usize)> = Vec::new();
+        let mut hash_sizes: Vec<(TxHash, usize)> = Vec::new();
+        hashes.for_each(|hash| {
+            let hash_sz = self.eth68_meta.peek(&hash).expect("should find size in `eth68-meta`");
+            hash_sizes.push((hash.clone(), *hash_sz));
+        });
+        hash_sizes.sort_unstable_by(|a, b| b.1.cmp(&a.1));
+
+        hash_sizes.into_iter().for_each(|hash_with_size| {
+            if acc_size_response + hash_with_size.1 < FULL_TRANSACTIONS_PACKET_SIZE_SOFT_LIMIT {
+                picked_hashes.push(hash_with_size.0);
+                acc_size_response += hash_with_size.1;
+            } else {
+                remaining_hashes.push(hash_with_size);
+            }
+        });
+
+        let mut additional_hashes = self.dp_optimised_pack(
+            remaining_hashes,
+            FULL_TRANSACTIONS_PACKET_SIZE_SOFT_LIMIT - 1 - acc_size_response,
+        );
+        picked_hashes.append(&mut additional_hashes);
+        picked_hashes
+    }
+
+    fn dp_optimised_pack(
+        &mut self,
+        hashes_with_size: Vec<(TxHash, usize)>,
+        size_to_fill: usize,
+    ) -> Vec<TxHash> {
+        if size_to_fill <= 0 {
+            return Vec::new()
+        }
+        Vec::new()
+    }
+
     pub(super) fn buffer_hashes_for_retry(&mut self, hashes: impl IntoIterator<Item = TxHash>) {
         self.buffer_hashes(hashes, None)
     }
