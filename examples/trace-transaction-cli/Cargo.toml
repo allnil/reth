@@ -10,3 +10,6 @@ reth.workspace = true
 reth-node-ethereum.workspace = true
 clap = { workspace = true, features = ["derive"] }
 futures-util.workspace = true
+futures.workspace = true
+tokio.workspace = true
+tokio-stream.workspace = true
