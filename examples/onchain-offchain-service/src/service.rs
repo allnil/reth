@@ -1,10 +1,7 @@
-use eyre::Result;
 use reth::primitives::SealedHeader;
 
 // draft of the some OffChain service
-pub struct OffChainService {
-
-}
+pub struct OffChainService {}
 
 impl OffChainService {
     pub fn react_on_new_block(self, new_header: SealedHeader) -> eyre::Result<()> {
@@ -12,7 +9,7 @@ impl OffChainService {
         return Ok(())
     }
 
-    fn escalate_gas_fee(self ) -> eyre::Result<()> {
+    fn escalate_gas_fee(self) -> eyre::Result<()> {
         return Ok(())
     }
 }

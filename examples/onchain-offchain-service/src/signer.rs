@@ -1,16 +1,46 @@
-use alloy_consensus::{TxLegacy, SignableTransaction, TxEip1559};
-use alloy_primitives::{U256, address, bytes, Sign};
-use alloy_signer::{Signer, SignerSync, Signature};
-use alloy_network::{TxSignerSync};
-use reth::primitives::Transaction;
+use alloy_eips;
+use alloy_signer::Signature;
+use alloy_signer_wallet::LocalWallet;
 
-pub fn sign(tx: Transaction) -> eyre::Result<(Signature)> {
-    // Instantiate a signer.
-    let signer = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" // anvil test account(0) 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
-        .parse::<alloy_signer_wallet::LocalWallet>()?;
+use alloy_network::TxSignerSync;
+pub struct SignerService {
+    wallet: LocalWallet,
+}
 
-    // Sign it.
-    let signature = signer.sign_transaction_sync(&mut tx)?; // trait bounds HMM
+impl SignerService {
+    pub fn new() -> SignerService {
+        // TODO: Get private key from cli
 
-    Ok(signature)
+        // Instantiate a signer.
+        let wallet = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" // anvil account 0
+            .parse::<alloy_signer_wallet::LocalWallet>()
+            .unwrap();
+        Self { wallet }
+    }
+
+    pub fn sign_signable(
+        self,
+        tx: &mut dyn alloy_consensus::SignableTransaction<alloy_signer::Signature>,
+    ) -> eyre::Result<(Signature)> {
+        let signature = self.wallet.sign_transaction_sync(tx)?;
+        Ok(signature)
+    }
+
+    pub fn sign_tx_eip4844(self, mut tx: alloy_consensus::TxEip4844) -> eyre::Result<(Signature)> {
+        let signature = self.wallet.sign_transaction_sync(&mut tx)?;
+
+        Ok(signature)
+    }
+
+    pub fn sign_tx_eip1559(self, mut tx: alloy_consensus::TxEip1559) -> eyre::Result<(Signature)> {
+        let signature = self.wallet.sign_transaction_sync(&mut tx)?;
+
+        Ok(signature)
+    }
+
+    pub fn sign_tx_eip2930(self, mut tx: alloy_consensus::TxEip2930) -> eyre::Result<(Signature)> {
+        let signature = self.wallet.sign_transaction_sync(&mut tx)?;
+
+        Ok(signature)
+    }
 }

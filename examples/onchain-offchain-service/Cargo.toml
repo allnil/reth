@@ -25,9 +25,12 @@ reth-transaction-pool.workspace = true
 alloy-signer = { git = "https://github.com/alloy-rs/alloy", rev = "410850b" }
 alloy-signer-wallet = { git = "https://github.com/alloy-rs/alloy", rev = "410850b" }
 alloy-consensus = { git = "https://github.com/alloy-rs/alloy", rev = "410850b" }
+alloy-eips = { git = "https://github.com/alloy-rs/alloy", rev = "410850b" }
 alloy-network = { git = "https://github.com/alloy-rs/alloy", rev = "410850b" }
 alloy-primitives.workspace = true
+alloy-rlp.workspace = true
 bytes.workspace = true
+
 
 # async
 tokio = { workspace = true, features = ["sync", "macros", "rt-multi-thread"] }
